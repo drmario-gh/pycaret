@@ -395,9 +395,8 @@ class SeasonalNaiveContainer(TimeSeriesContainer):
         if not self.active:
             return
 
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
 
         if self.sp == 1:
             self.active = False
@@ -511,9 +510,8 @@ class ArimaContainer(TimeSeriesContainer):
         if not self.active:
             return
 
+        sp = globals_dict.get("sp_to_use") or 1
         seasonality_present = globals_dict.get("seasonality_present")
-        sp = globals_dict.get("seasonal_period")
-        sp = sp if sp is not None else 1
 
         # args = self._set_args
         # tune_args = self._set_tune_args
@@ -675,8 +673,7 @@ class AutoArimaContainer(TimeSeriesContainer):
             return
 
         self.seasonality_present = globals_dict.get("seasonality_present")
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
+        self.sp = globals_dict.get("sp_to_use") or 1
 
         args = self._set_args
         tune_args = self._set_tune_args
@@ -746,9 +743,8 @@ class ExponentialSmoothingContainer(TimeSeriesContainer):
         if not self.active:
             return
 
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
 
         self.strictly_positive = globals_dict.get("strictly_positive")
 
@@ -856,12 +852,14 @@ class ExponentialSmoothingContainer(TimeSeriesContainer):
             }
         return tune_distributions
 
+
 class CrostonContainer(TimeSeriesContainer):
     """
     SKtime documentation:
     https://www.sktime.org/en/latest/api_reference/auto_generated/sktime.forecasting.croston.Croston.html
 
     """
+
     model_type = TSModelTypes.CLASSICAL
 
     def __init__(self, globals_dict: dict) -> None:
@@ -873,8 +871,9 @@ class CrostonContainer(TimeSeriesContainer):
 
         dummy = Croston()
         # check if pi is enforced.
-        self.active:bool = self.disable_pred_int_enforcement(
-            forecaster=dummy, enforce_pi=globals_dict["enforce_pi"])
+        self.active: bool = self.disable_pred_int_enforcement(
+            forecaster=dummy, enforce_pi=globals_dict["enforce_pi"]
+        )
 
         # if not, make the model unavailiable
         if not self.active:
@@ -890,7 +889,7 @@ class CrostonContainer(TimeSeriesContainer):
             class_def=Croston,
             tune_grid=tune_grid,
             tune_distribution=tune_distributions,
-            is_gpu_enabled=self.gpu_imported
+            is_gpu_enabled=self.gpu_imported,
         )
 
     @property
@@ -898,16 +897,15 @@ class CrostonContainer(TimeSeriesContainer):
         # lack of research/evidence for suitable range here,
         # SKtime and R implementations are default 0.1
         smoothing_grid: List[float] = [0.01, 0.03, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
-        tune_grid = {"smoothing" : smoothing_grid}
+        tune_grid = {"smoothing": smoothing_grid}
         return tune_grid
 
     @property
     def _set_tune_distributions(self) -> Dict[str, List[Any]]:
-        tune_distributions = {"smoothing": UniformDistribution(
-                lower=0.01, upper=1, log=True
-            )}
+        tune_distributions = {
+            "smoothing": UniformDistribution(lower=0.01, upper=1, log=True)
+        }
         return tune_distributions
-
 
 
 class ETSContainer(TimeSeriesContainer):
@@ -927,9 +925,8 @@ class ETSContainer(TimeSeriesContainer):
         if not self.active:
             return
 
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
 
         self.strictly_positive = globals_dict.get("strictly_positive")
 
@@ -1006,9 +1003,8 @@ class ThetaContainer(TimeSeriesContainer):
         if not self.active:
             return
 
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
 
         self.strictly_positive = globals_dict.get("strictly_positive")
 
@@ -1101,9 +1097,7 @@ class TBATSContainer(TimeSeriesContainer):
         if not self.active:
             return
 
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
-
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
 
         args = self._set_args
@@ -1171,9 +1165,7 @@ class BATSContainer(TimeSeriesContainer):
         if not self.active:
             return
 
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
-
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
 
         args = self._set_args
@@ -1241,10 +1233,9 @@ class ProphetContainer(TimeSeriesContainer):
         if not self.active:
             return
 
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
-
+        self.sp = globals_dict.get("sp_to_use") or 1
         self.seasonality_present = globals_dict.get("seasonality_present")
+
         self.freq = globals_dict.get("freq")
 
         args = self._set_args
@@ -1335,8 +1326,8 @@ class CdsDtContainer(TimeSeriesContainer):
             return
 
         # Set the model hyperparameters
-        sp = globals_dict.get("seasonal_period")
-        self.sp = sp if sp is not None else 1
+        self.sp = globals_dict.get("sp_to_use") or 1
+        self.seasonality_present = globals_dict.get("seasonality_present")
 
         self.strictly_positive = globals_dict.get("strictly_positive")
 
@@ -2625,7 +2616,6 @@ try:
                 pass
             return y
 
-
 except ImportError:
     Prophet = None
     ProphetPeriodPatched = None
@@ -2669,5 +2659,3 @@ def get_all_model_containers(
     return pycaret.containers.base_container.get_all_containers(
         globals(), globals_dict, TimeSeriesContainer, raise_errors
     )
-
-

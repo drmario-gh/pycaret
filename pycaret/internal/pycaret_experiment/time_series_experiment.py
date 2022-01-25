@@ -561,7 +561,12 @@ class BaseGridSearch:
         # not contain all the params
         param_results = defaultdict(
             partial(
-                np.ma.MaskedArray, np.empty(n_candidates,), mask=True, dtype=object,
+                np.ma.MaskedArray,
+                np.empty(
+                    n_candidates,
+                ),
+                mask=True,
+                dtype=object,
             )
         )
         for cand_i, params in enumerate(candidate_params):
@@ -688,7 +693,7 @@ class TimeSeriesExperiment(_SupervisedExperiment):
             {
                 "fh",
                 "seasonal_period",
-                "seasonality_present",
+                "seasonality_present",  # Do we still need this here?
                 "sp_to_use",
                 "strictly_positive",
                 "enforce_pi",
@@ -765,7 +770,9 @@ class TimeSeriesExperiment(_SupervisedExperiment):
                 ]
             )
             + (
-                [["Imputation Type", kwargs["imputation_type"]],]
+                [
+                    ["Imputation Type", kwargs["imputation_type"]],
+                ]
                 if self.preprocess
                 else []
             ),
@@ -787,8 +794,10 @@ class TimeSeriesExperiment(_SupervisedExperiment):
             ).items()
             if not v.is_special
         }
-        all_models_internal = pycaret.containers.models.time_series.get_all_model_containers(
-            self.variables, raise_errors=raise_errors
+        all_models_internal = (
+            pycaret.containers.models.time_series.get_all_model_containers(
+                self.variables, raise_errors=raise_errors
+            )
         )
         return all_models, all_models_internal
 
@@ -1640,7 +1649,9 @@ class TimeSeriesExperiment(_SupervisedExperiment):
             self.display_container.append(model_results)
 
             display.display(
-                model_results, clear=system, override=False if not system else None,
+                model_results,
+                clear=system,
+                override=False if not system else None,
             )
 
             self.logger.info(f"display_container: {len(self.display_container)}")
@@ -1669,7 +1680,8 @@ class TimeSeriesExperiment(_SupervisedExperiment):
         #     1, f"Fitting {_get_cv_n_folds(data_y, cv)} Folds",
         # )
         display.update_monitor(
-            1, f"Fitting {cv.get_n_splits(data_y)} Folds",
+            1,
+            f"Fitting {cv.get_n_splits(data_y)} Folds",
         )
         display.display_monitor()
         """
@@ -1747,7 +1759,10 @@ class TimeSeriesExperiment(_SupervisedExperiment):
         model_results = pd.DataFrame(score_dict)
         model_results.insert(0, "cutoff", cutoffs)
 
-        model_avgs = pd.DataFrame(avgs_dict, index=["Mean", "SD"],)
+        model_avgs = pd.DataFrame(
+            avgs_dict,
+            index=["Mean", "SD"],
+        )
         model_avgs.insert(0, "cutoff", np.nan)
 
         model_results = model_results.append(model_avgs)
@@ -3217,9 +3232,15 @@ class TimeSeriesExperiment(_SupervisedExperiment):
             try:
                 np.random.seed(self.seed)
                 if not display:
-                    display = Display(verbose=verbose, html_param=self.html_param,)
+                    display = Display(
+                        verbose=verbose,
+                        html_param=self.html_param,
+                    )
             except:
-                display = Display(verbose=False, html_param=False,)
+                display = Display(
+                    verbose=False,
+                    html_param=False,
+                )
 
             full_name = self._get_model_name(estimator_)
             df_score = pd.DataFrame(metrics, index=[0])
@@ -3236,7 +3257,10 @@ class TimeSeriesExperiment(_SupervisedExperiment):
         return result
 
     def finalize_model(
-        self, estimator, fit_kwargs: Optional[dict] = None, model_only: bool = True,
+        self,
+        estimator,
+        fit_kwargs: Optional[dict] = None,
+        model_only: bool = True,
     ) -> Any:
 
         """
@@ -3273,11 +3297,17 @@ class TimeSeriesExperiment(_SupervisedExperiment):
         """
 
         return super().finalize_model(
-            estimator=estimator, fit_kwargs=fit_kwargs, model_only=model_only,
+            estimator=estimator,
+            fit_kwargs=fit_kwargs,
+            model_only=model_only,
         )
 
     def deploy_model(
-        self, model, model_name: str, authentication: dict, platform: str = "aws",
+        self,
+        model,
+        model_name: str,
+        authentication: dict,
+        platform: str = "aws",
     ):
 
         """
@@ -3611,7 +3641,9 @@ class TimeSeriesExperiment(_SupervisedExperiment):
         """
 
         return super().get_metrics(
-            reset=reset, include_custom=include_custom, raise_errors=raise_errors,
+            reset=reset,
+            include_custom=include_custom,
+            raise_errors=raise_errors,
         )
 
     def add_metric(
@@ -4034,7 +4066,11 @@ def update_additional_scorer_kwargs(
     """
     additional_scorer_kwargs = initial_kwargs.copy()
     additional_scorer_kwargs.update(
-        {"y_train": y_train, "lower": lower, "upper": upper,}
+        {
+            "y_train": y_train,
+            "lower": lower,
+            "upper": upper,
+        }
     )
     return additional_scorer_kwargs
 
